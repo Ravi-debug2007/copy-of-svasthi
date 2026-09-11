@@ -3,6 +3,7 @@ import { DEFAULT_DIARY_ENTRIES } from '../../data/mockData';
 import { ReflectionEntry, ScreenType } from '../../types';
 import { playSingingBowlChime } from '../../utils/audio';
 import { JournalPenArt, BotanicalBranch } from '../illustrations/IndieIllustrations';
+import { createInsight, saveJournal } from '../../services/svasthi';
 
 interface DiaryScreenProps {
   onNavigate: (screen: ScreenType) => void;
@@ -16,12 +17,28 @@ export const DiaryScreen: React.FC<DiaryScreenProps> = ({ onNavigate, onOpenBrea
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState<ReflectionEntry>(DEFAULT_DIARY_ENTRIES[0]);
 
-  const handleAnalyze = (e: React.FormEvent) => {
+  const handleAnalyze = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!content.trim()) return;
 
     setIsAnalyzing(true);
     playSingingBowlChime(432);
+
+    const checkInId = window.localStorage.getItem('svasthi-last-check-in');
+    if (!checkInId) {
+      setIsAnalyzing(false);
+      window.alert('Please save a daily check-in before requesting a reflection insight.');
+      return;
+    }
+    let insight;
+    try {
+      const journalResult = await saveJournal(content.trim());
+      ({ insight } = await createInsight(checkInId, journalResult.journal.id));
+    } catch (requestError) {
+      setIsAnalyzing(false);
+      window.alert(requestError instanceof Error ? requestError.message : 'Unable to analyze this reflection.');
+      return;
+    }
 
     setTimeout(() => {
       setIsAnalyzing(false);
@@ -32,18 +49,18 @@ export const DiaryScreen: React.FC<DiaryScreenProps> = ({ onNavigate, onOpenBrea
         date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         content: content.trim(),
-        tags: ['Self-Compassion', 'CBT Reframe', 'Reflection'],
+        tags: insight.evidence.slice(0, 3),
         cbtReport: {
           emotionalSpectrum: [
-            { emotion: 'Vulnerability', percentage: 72, colorClass: 'bg-[#87513D] text-white' },
+            { emotion: insight.title, percentage: insight.crisis ? 90 : 72, colorClass: insight.crisis ? 'bg-[#BA1A1A] text-white' : 'bg-[#87513D] text-white' },
             { emotion: 'Mental Tension', percentage: 60, colorClass: 'bg-[#5D4677] text-white' },
             { emotion: 'Hope', percentage: 45, colorClass: 'bg-[#3B6346] text-white' }
           ],
           distortions: [
             {
               type: 'All-or-Nothing Thinking',
-              title: 'All-or-Nothing Thinking',
-              description: 'Viewing the situation as either an absolute success or a total failure without recognizing the nuanced gray area.'
+              title: insight.crisis ? `Immediate support: ${insight.phone || '14416'}` : 'Wellness signal',
+              description: insight.evidence.join(' ')
             },
             {
               type: 'Emotional Reasoning',
@@ -52,7 +69,7 @@ export const DiaryScreen: React.FC<DiaryScreenProps> = ({ onNavigate, onOpenBrea
             }
           ],
           reframe: '“You are navigating challenging moments with sincere courage. Feelings of self-doubt do not reflect your true capacity. You are allowed to take space, breathe, and learn as you grow.”',
-          microAction: 'Place a warm hand over your heart, breathe in for 4 seconds, and give yourself credit for showing up today.'
+          microAction: insight.suggestion
         }
       };
 

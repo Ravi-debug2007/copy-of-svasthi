@@ -3,6 +3,7 @@ import { ASSETS } from '../../data/mockData';
 import { ChatMessage, ScreenType } from '../../types';
 import { playSingingBowlChime } from '../../utils/audio';
 import { DawnCompanionArt, BreathLeavesArt } from '../illustrations/IndieIllustrations';
+import { sendChatMessage } from '../../services/svasthi';
 
 interface DawnChatScreenProps {
   onNavigate: (screen: ScreenType) => void;
@@ -65,7 +66,7 @@ export const DawnChatScreen: React.FC<DawnChatScreenProps> = ({ onNavigate }) =>
     return () => clearInterval(timer);
   }, [isMicroBreathActive]);
 
-  const handleSend = (textToSend?: string) => {
+  const handleSend = async (textToSend?: string) => {
     const text = (textToSend || inputVal).trim();
     if (!text) return;
 
@@ -80,16 +81,24 @@ export const DawnChatScreen: React.FC<DawnChatScreenProps> = ({ onNavigate }) =>
     setMessages((prev) => [...prev, newMsg]);
     setInputVal('');
     setIsReflecting(true);
+    let response;
+    try {
+      response = await sendChatMessage(text);
+    } catch (requestError) {
+      setIsReflecting(false);
+      setMessages((prev) => [...prev, { id: `dawn-error-${Date.now()}`, sender: 'dawn', text: requestError instanceof Error ? requestError.message : 'I could not connect right now. Please try again.', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]);
+      return;
+    }
 
     // Thoughtful empathetic AI companion response
     setTimeout(() => {
       setIsReflecting(false);
       const dawnTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       
-      let reply = "I hear you deeply. Remember that whatever you are experiencing right now is valid, and you don't have to carry it all at once.";
+      let reply = response.reply;
       let offerBreath = false;
 
-      const lower = text.toLowerCase();
+      const lower = '';
       if (lower.includes('breath') || lower.includes('breathing')) {
         reply = "Let's take a conscious pause together. Regulating your breath is the fastest biological signal to your vagus nerve that you are safe right now.";
         offerBreath = true;

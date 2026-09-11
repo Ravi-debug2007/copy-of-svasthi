@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ScreenType } from '../../types';
 import { playSingingBowlChime } from '../../utils/audio';
 import { BotanicalBranch } from '../illustrations/IndieIllustrations';
+import { saveCheckIn } from '../../services/svasthi';
 
 interface CheckInScreenProps {
   onNavigate: (screen: ScreenType) => void;
@@ -15,6 +16,7 @@ export const CheckInScreen: React.FC<CheckInScreenProps> = ({ onNavigate }) => {
   const [selectedSomatic, setSelectedSomatic] = useState<string[]>(['Shoulder knot']);
   const [note, setNote] = useState('');
   const [isSaved, setIsSaved] = useState(false);
+  const [error, setError] = useState('');
 
   const moodOptions = [
     { label: 'Joyful', emoji: '😄', desc: 'Light & elevated' },
@@ -57,14 +59,22 @@ export const CheckInScreen: React.FC<CheckInScreenProps> = ({ onNavigate }) => {
     );
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    playSingingBowlChime(432);
-    setIsSaved(true);
-    setTimeout(() => {
+    setError('');
+    try {
+      const moodValues: Record<string, number> = { Joyful: 5, Calm: 4, Neutral: 3, Low: 2, Stressed: 2, Exhausted: 1 };
+      const result = await saveCheckIn({ mood: moodValues[selectedMood], stress: stressLevel, energy: Math.max(0, 10 - stressLevel), sleepHours, contexts: [...selectedFactors, ...selectedSomatic].slice(0, 8) });
+      window.localStorage.setItem('svasthi-last-check-in', result.checkIn.id);
+      playSingingBowlChime(432);
+      setIsSaved(true);
+      setTimeout(() => {
       setIsSaved(false);
       onNavigate('home');
-    }, 1800);
+      }, 1800);
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : 'Unable to save your check-in.');
+    }
   };
 
   return (
@@ -100,6 +110,7 @@ export const CheckInScreen: React.FC<CheckInScreenProps> = ({ onNavigate }) => {
           <span>Daily check-in saved to your Health Record! Redirecting...</span>
         </div>
       )}
+      {error && <div role="alert" className="bg-[#FDE8E8] text-[#7A1E1E] p-4 rounded-3xl text-xs font-semibold border border-[#F5CDCD]">{error}</div>}
 
       {/* Form Content - 2 Column Layout on Desktop */}
       <form onSubmit={handleSubmit} className="flex flex-col gap-5">
