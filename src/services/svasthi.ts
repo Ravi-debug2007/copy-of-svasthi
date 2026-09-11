@@ -1,4 +1,6 @@
-const apiBaseUrl = (import.meta.env.VITE_SVASTHI_API_URL || "http://localhost:3001").replace(/\/$/, "");
+// In production this resolves to Vercel's same-origin API route. Set the variable
+// only when using a separate local Svasthi API during development.
+const apiBaseUrl = (import.meta.env.VITE_SVASTHI_API_URL || "").replace(/\/$/, "");
 const sessionStorageKey = "svasthi-session-id";
 
 function sessionId() {

@@ -113,7 +113,7 @@ export const DawnChatScreen: React.FC<DawnChatScreenProps> = ({ onNavigate }) =>
       let reply = response.reply;
       let offerBreath = false;
 
-      const lower = '';
+      const lower = text.toLowerCase();
       if (lower.includes('breath') || lower.includes('breathing')) {
         reply = "Let's take a conscious pause together. Regulating your breath is the fastest biological signal to your vagus nerve that you are safe right now.";
         offerBreath = true;
