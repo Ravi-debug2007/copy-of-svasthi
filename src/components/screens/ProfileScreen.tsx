@@ -1,34 +1,33 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ASSETS } from '../../data/mockData';
 import { ScreenType } from '../../types';
 import { playSingingBowlChime } from '../../utils/audio';
 import { BotanicalBranch } from '../illustrations/IndieIllustrations';
+import { getDashboard, getHabits, Habit, toggleHabit as persistHabit } from '../../services/svasthi';
 
 interface ProfileScreenProps {
   onNavigate: (screen: ScreenType) => void;
 }
 
 export const ProfileScreen: React.FC<ProfileScreenProps> = ({ onNavigate }) => {
-  const [habits, setHabits] = useState([
-    { id: 'h1', title: 'Hydration (Target: 2.5L)', time: 'Throughout day', done: true, icon: 'water_drop' },
-    { id: 'h2', title: '10-Min Somatic Box Breathing', time: 'Morning Reset', done: true, icon: 'air' },
-    { id: 'h3', title: 'Medication (Prescribed Evening)', time: '8:30 PM', done: true, icon: 'pill' },
-    { id: 'h4', title: 'Evening Reflection Journal', time: '9:30 PM', done: false, icon: 'edit_note' },
-    { id: 'h5', title: '30-Min Mindful Sunset Walk', time: '5:30 PM', done: true, icon: 'directions_walk' },
-  ]);
+  const [habits, setHabits] = useState<Habit[]>([]);
+  const [stats, setStats] = useState({ streakDays: 0, wellnessScore: 0 });
 
   const [pdfToast, setPdfToast] = useState(false);
 
-  const toggleHabit = (id: string) => {
-    setHabits((prev) =>
-      prev.map((h) => {
-        if (h.id === id) {
-          if (!h.done) playSingingBowlChime(528);
-          return { ...h, done: !h.done };
-        }
-        return h;
-      })
-    );
+  useEffect(() => {
+    getHabits().then(({ habits: liveHabits }) => setHabits(liveHabits)).catch(() => undefined);
+    getDashboard().then(({ stats: liveStats }) => setStats(liveStats)).catch(() => undefined);
+  }, []);
+
+  const toggleHabit = async (id: string) => {
+    try {
+      const { habit } = await persistHabit(id);
+      if (habit.done) playSingingBowlChime(528);
+      setHabits((prev) => prev.map((item) => item.id === id ? habit : item));
+    } catch {
+      // Preserve the last confirmed server state if the request fails.
+    }
   };
 
   const handleExportPdf = () => {
@@ -103,7 +102,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ onNavigate }) => {
           <span className="material-symbols-outlined text-[#3B6346] text-[24px] mb-1">
             local_fire_department
           </span>
-          <span className="font-headline text-lg font-bold text-primary">12 Days</span>
+          <span className="font-headline text-lg font-bold text-primary">{stats.streakDays} Days</span>
           <span className="text-[10px] text-on-surface-variant">Sanctuary Streak</span>
         </div>
 
@@ -121,7 +120,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ onNavigate }) => {
           <span className="material-symbols-outlined text-[#87513D] text-[24px] mb-1">
             verified
           </span>
-          <span className="font-headline text-lg font-bold text-primary">94%</span>
+          <span className="font-headline text-lg font-bold text-primary">{stats.wellnessScore}%</span>
           <span className="text-[10px] text-on-surface-variant">Check-in Rate</span>
         </div>
       </section>
@@ -248,7 +247,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ onNavigate }) => {
           encrypted
         </span>
         <p className="text-xs text-on-surface-variant leading-relaxed">
-          Niramaya adheres to strict patient privacy guidelines. Clinical self-assessment data is stored
+          Svasthi adheres to strict patient privacy guidelines. Clinical self-assessment data is stored
           securely on your device and will never be shared without your explicit consent.
         </p>
       </footer>

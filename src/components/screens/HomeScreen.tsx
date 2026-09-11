@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ScreenType } from '../../types';
+import { saveCheckIn } from '../../services/svasthi';
 import {
   MindfulMeditationArt,
   DawnCompanionArt,
@@ -28,9 +29,16 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate, onOpenQuickC
     { label: 'Anxious', emoji: '⚡', val: 'Stressed', color: 'bg-[#FAECE4] text-[#7A4330]' },
   ];
 
-  const handleSelectMood = (moodName: string) => {
+  const handleSelectMood = async (moodName: string) => {
     setSelectedMood(moodName);
-    setMoodToast(`Logged ${moodName}. Holding space for you.`);
+    const moodValues: Record<string, number> = { Joyful: 5, Calm: 4, Neutral: 3, Low: 2, Stressed: 2 };
+    try {
+      const result = await saveCheckIn({ mood: moodValues[moodName] ?? 3, stress: moodName === 'Stressed' ? 7 : 4, energy: moodName === 'Joyful' ? 7 : 5, sleepHours: 7, contexts: ['Quick mood check-in'] });
+      window.localStorage.setItem('svasthi-last-check-in', result.checkIn.id);
+      setMoodToast(`Logged ${moodName}. Holding space for you.`);
+    } catch {
+      setMoodToast('Unable to save right now. Please try again.');
+    }
     setTimeout(() => {
       setMoodToast(null);
     }, 3500);
@@ -73,10 +81,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate, onOpenQuickC
             <div className="flex flex-col gap-2 max-w-md">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E5DCF0] text-[#45365C] text-xs font-bold w-fit shadow-2xs">
                 <StarDoodle className="w-3.5 h-3.5 text-[#8A58A6]" />
-                <span>Niramaya Mindful Sanctuary</span>
+                <span>Svasthi Mindful Sanctuary</span>
               </div>
               <h1 className="font-headline text-2xl sm:text-3xl font-bold text-primary tracking-tight leading-tight">
-                Namaste, Aarav 🙏
+                Your Svasthi Sanctuary
               </h1>
               <p className="text-sm text-on-surface-variant leading-relaxed">
                 Take a gentle pause. Your mind deserves softness today, free from expectations and haste.

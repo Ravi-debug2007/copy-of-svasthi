@@ -41,13 +41,13 @@ export const Header: React.FC<HeaderProps> = ({ currentScreen, onNavigate }) => 
           className="flex items-center gap-2.5 min-w-0 text-left cursor-pointer group active:scale-98 transition-transform flex-shrink-0"
         >
           <img 
-            alt="Niramaya Lotus Emblem" 
+            alt="Svasthi Lotus Emblem" 
             className="h-8 w-8 object-contain flex-shrink-0 group-hover:rotate-6 transition-transform" 
             src={ASSETS.emblem} 
           />
           <div className="flex flex-col min-w-0">
             <span className="font-headline font-bold text-base md:text-lg text-primary tracking-wide truncate">
-              निरामय (Niramaya)
+              स्वस्ति (Svasthi)
             </span>
             <span className="text-[11px] font-medium text-on-surface-variant truncate -mt-0.5 md:hidden">
               {getScreenTitle()}

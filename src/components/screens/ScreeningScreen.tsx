@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { INITIAL_TESTS } from '../../data/mockData';
 import { ScreeningTest, ScreenType } from '../../types';
 import { MindfulMeditationArt, BotanicalBranch } from '../illustrations/IndieIllustrations';
+import { saveScreening } from '../../services/svasthi';
 
 interface ScreeningScreenProps {
   onNavigate: (screen: ScreenType) => void;
@@ -27,7 +28,7 @@ export const ScreeningScreen: React.FC<ScreeningScreenProps> = ({ onNavigate }) 
     setAnswers((prev) => ({ ...prev, [questionIndex]: pts }));
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (questionIndex < totalQuestions - 1) {
       setQuestionIndex((prev) => prev + 1);
       const nextAns = answers[questionIndex + 1];
@@ -38,15 +39,21 @@ export const ScreeningScreen: React.FC<ScreeningScreenProps> = ({ onNavigate }) 
       for (let i = 0; i < totalQuestions; i++) {
         total += answers[i] !== undefined ? answers[i] : 1;
       }
+      let label = 'Mild';
+      if (total <= 4) label = 'Minimal';
+      else if (total <= 9) label = 'Mild Severity';
+      else if (total <= 14) label = 'Moderate';
+      else label = 'Severe';
+      try {
+        await saveScreening({ title: currentTest.title, score: total, maxScore: currentTest.maxScore, statusLabel: label });
+      } catch {
+        setCompletedNotice('Unable to save this result. Please try again.');
+        return;
+      }
       // Update tests list
       setTests((prev) =>
         prev.map((t) => {
           if (t.id === currentTest.id) {
-            let label = 'Mild';
-            if (total <= 4) label = 'Minimal';
-            else if (total <= 9) label = 'Mild Severity';
-            else if (total <= 14) label = 'Moderate';
-            else label = 'Severe';
             return {
               ...t,
               score: total,

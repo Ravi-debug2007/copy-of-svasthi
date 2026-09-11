@@ -229,7 +229,7 @@ export const DiaryScreen: React.FC<DiaryScreenProps> = ({ onNavigate, onOpenBrea
                   </span>
                   <div>
                     <h3 className="font-headline text-sm md:text-base font-bold text-primary">
-                      Niramaya CBT Insight
+                      Svasthi CBT Insight
                     </h3>
                     <span className="text-[11px] text-on-surface-variant">
                       {selectedEntry.title} • {selectedEntry.date}

@@ -34,3 +34,26 @@ export function saveJournal(transcript: string) {
 export function createInsight(checkInId: string, journalId: string) {
   return request<{ insight: { title: string; suggestion: string; evidence: string[]; crisis: boolean; phone?: string } }>("/api/insights", { method: "POST", body: JSON.stringify({ checkInId, journalId }) });
 }
+
+export type Habit = { id: string; title: string; time: string; done: boolean; icon: string };
+export type Dashboard = { stats: { streakDays: number; avgSleepHours: number; wellnessScore: number; completedHabits: number; habitCount: number }; currentCheckIn: { mood: number; stress: number; sleepHours: number } | null };
+
+export function getDashboard() {
+  return request<Dashboard>("/api/dashboard");
+}
+
+export function getHabits() {
+  return request<{ habits: Habit[] }>("/api/habits");
+}
+
+export function toggleHabit(id: string) {
+  return request<{ habit: Habit }>("/api/habits", { method: "PATCH", body: JSON.stringify({ id }) });
+}
+
+export function saveScreening(input: { title: string; score: number; maxScore: number; statusLabel: string }) {
+  return request<{ screening: { id: string } }>("/api/screenings", { method: "POST", body: JSON.stringify(input) });
+}
+
+export function logActivity(type: string) {
+  return request<{ activity: { id: string } }>("/api/activities", { method: "POST", body: JSON.stringify({ type }) });
+}

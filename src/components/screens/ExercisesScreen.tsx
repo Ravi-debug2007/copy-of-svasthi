@@ -3,6 +3,7 @@ import { ASSETS, INITIAL_EXERCISES } from '../../data/mockData';
 import { ScreenType, ExerciseItem } from '../../types';
 import { playSingingBowlChime, toggleDrone432Hz } from '../../utils/audio';
 import { BreathLeavesArt, BotanicalBranch } from '../illustrations/IndieIllustrations';
+import { logActivity } from '../../services/svasthi';
 
 interface ExercisesScreenProps {
   onNavigate: (screen: ScreenType) => void;
@@ -81,6 +82,7 @@ export const ExercisesScreen: React.FC<ExercisesScreenProps> = ({ onNavigate, on
     setStepIndex(0);
     setTimer(newPattern === 'box' ? 4 : 4);
     if (chimeEnabled) playSingingBowlChime(432);
+    void logActivity(`Started ${newPattern === 'box' ? 'box breathing' : '4-7-8 relaxation breathing'}`);
   };
 
   const toggleChime = () => {
@@ -105,6 +107,7 @@ export const ExercisesScreen: React.FC<ExercisesScreenProps> = ({ onNavigate, on
     if (!groundingState[num] && chimeEnabled) {
       playSingingBowlChime(528);
     }
+    if (!groundingState[num]) void logActivity(`Completed ${num}-senses grounding step`);
   };
 
   const cyclePercent = Math.round((cycleCount / maxCycles) * 100);

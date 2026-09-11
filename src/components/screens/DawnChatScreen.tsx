@@ -14,8 +14,9 @@ export const DawnChatScreen: React.FC<DawnChatScreenProps> = ({ onNavigate }) =>
     {
       id: 'msg-1',
       sender: 'dawn',
-      text: "Hello Aarav. I'm Dawn, your mindful wellness companion. I'm here to listen without judgment. How are you holding up today?",
+      text: 'What is your name?',
       time: '10:42 AM',
+      /*
       chips: [
         '✨ Feeling overwhelmed with work',
         "🌙 Can't fall asleep",
@@ -35,6 +36,7 @@ export const DawnChatScreen: React.FC<DawnChatScreenProps> = ({ onNavigate }) =>
       text: "It is completely understandable to feel physical tension before public speaking. Your body is just trying to prepare you, but we can help it soften.\n\nLet's ground ourselves first. Would you like to do a 1-minute 4-4-4-4 Box Breathing exercise with me, or break down the thoughts causing this worry?",
       time: '10:44 AM',
       hasBreathAction: true
+      */
     }
   ]);
 
@@ -43,6 +45,7 @@ export const DawnChatScreen: React.FC<DawnChatScreenProps> = ({ onNavigate }) =>
   const [isCrisisExpanded, setIsCrisisExpanded] = useState(true);
   const [isRecording, setIsRecording] = useState(false);
   const [isReflecting, setIsReflecting] = useState(false);
+  const [isAwaitingName, setIsAwaitingName] = useState(true);
 
   // Micro breathing session in Dawn chat
   const [isMicroBreathActive, setIsMicroBreathActive] = useState(false);
@@ -80,6 +83,18 @@ export const DawnChatScreen: React.FC<DawnChatScreenProps> = ({ onNavigate }) =>
 
     setMessages((prev) => [...prev, newMsg]);
     setInputVal('');
+
+    if (isAwaitingName) {
+      setIsAwaitingName(false);
+      setMessages((prev) => [...prev, {
+        id: `dawn-name-${Date.now()}`,
+        sender: 'dawn',
+        text,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      }]);
+      return;
+    }
+
     setIsReflecting(true);
     let response;
     try {
@@ -142,11 +157,11 @@ export const DawnChatScreen: React.FC<DawnChatScreenProps> = ({ onNavigate }) =>
         {
           id: 'msg-reset',
           sender: 'dawn',
-          text: "Welcome back, Aarav. Take a slow, mindful breath. How can I support your calm today?",
-          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          chips: ['✨ Feeling overwhelmed with work', '🫁 Need a quick breathing exercise', '💬 Just want to vent']
+          text: 'What is your name?',
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         }
       ]);
+      setIsAwaitingName(true);
     }
   };
 
@@ -511,7 +526,7 @@ export const DawnChatScreen: React.FC<DawnChatScreenProps> = ({ onNavigate }) =>
         </form>
 
         <p className="text-center text-[11px] text-on-surface-variant mt-1.5 truncate">
-          Niramaya AI is a supportive guide, not medical advice.
+          Svasthi AI is a supportive guide, not medical advice.
         </p>
       </div>
     </div>
