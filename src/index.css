@@ -1,0 +1,87 @@
+@import "tailwindcss";
+
+@theme {
+  --color-surface: #faf7f2;
+  --color-surface-dim: #f0eae0;
+  --color-surface-bright: #fffdfa;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f5f0e6;
+  --color-surface-container: #ede6d8;
+  --color-surface-container-high: #e5dec8;
+  --color-surface-container-highest: #ded6c2;
+  --color-on-surface: #2c2533;
+  --color-on-surface-variant: #595361;
+  --color-inverse-surface: #383040;
+  --color-inverse-on-surface: #f9f5ed;
+  --color-outline: #857e8f;
+  --color-outline-variant: #d6d0dc;
+  --color-surface-tint: #64557a;
+  --color-primary: #2c2533;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #483d54;
+  --color-on-primary-container: #ded4ea;
+  --color-inverse-primary: #d7cae5;
+  --color-secondary: #3b6346;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #d8ebdd;
+  --color-on-secondary-container: #1b3d24;
+  --color-tertiary: #87513d;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #fae1d6;
+  --color-on-tertiary-container: #4f2516;
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #fde8e8;
+  --color-on-error-container: #681111;
+  --color-primary-fixed: #eee7f5;
+  --color-primary-fixed-dim: #ddd1e8;
+  --color-on-primary-fixed: #2b1f38;
+  --color-on-primary-fixed-variant: #56476b;
+  --color-secondary-fixed: #e2efe5;
+  --color-secondary-fixed-dim: #c5decb;
+  --color-on-secondary-fixed: #17371f;
+  --color-on-secondary-fixed-variant: #355b3f;
+  --color-tertiary-fixed: #faeae3;
+  --color-tertiary-fixed-dim: #f3d7cb;
+  --color-on-tertiary-fixed: #3d1b10;
+  --color-on-tertiary-fixed-variant: #6b3b2a;
+  --color-background: #faf7f2;
+  --color-on-background: #2c2533;
+  --color-surface-variant: #eee7f5;
+
+  --font-body-md: 'Be Vietnam Pro', system-ui, sans-serif;
+  --font-headline-lg: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-headline-md: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-headline-sm: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-label-lg: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-label-md: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-label-sm: 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+    color: #2c2533;
+    background-color: #faf7f2;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+  }
+  h1, h2, h3, h4, h5, h6, .font-headline {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    letter-spacing: -0.015em;
+  }
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+}
+

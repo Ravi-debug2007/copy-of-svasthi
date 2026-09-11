@@ -1,0 +1,6 @@
+{
+  "name": "Niramaya Holistic Wellness",
+  "description": "Mindful mental wellness sanctuary featuring 24/7 empathetic companion Dawn, clinical psychological screenings, CBT reflection diary, somatic exercises, and crisis lifelines.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
