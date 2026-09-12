@@ -1,6 +1,12 @@
 import { GoogleGenAI } from '@google/genai';
 
-const crisisPattern = /\b(suicide|kill myself|end my life|self[- ]?harm|hurt myself|want to die)\b/i;
+// Keep these patterns in sync with the Svasthi backend (src/lib/safety/crisis.ts).
+const crisisPatterns = [
+  /\b(kill myself|end my life|suicide|suicidal|want to die|self[- ]?harm|hurt myself)\b/i,
+  /\b(no reason to live|cannot go on|can't go on)\b/i,
+  /\b(khudkushi|khudkhushi)\b/i,
+  /\b(marna chahta|marna chahti|jeena nahi chahta|jeena nahi chahti)\b/i,
+];
 
 const systemInstruction = `You are Dawn, a warm and concise mental-wellness companion.
 Offer empathetic reflection, gentle grounding ideas, and practical next steps.
@@ -20,7 +26,7 @@ export default async function handler(request: VercelRequest, response: VercelRe
     return response.status(400).json({ error: 'Please share a message first.' });
   }
 
-  if (crisisPattern.test(message)) {
+  if (crisisPatterns.some((pattern) => pattern.test(message))) {
     return response.status(200).json({
       crisis: true,
       phone: '14416',
