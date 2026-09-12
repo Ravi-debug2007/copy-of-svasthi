@@ -16,6 +16,7 @@ If someone mentions immediate danger, suicide, self-harm, or harming others, enc
 type VercelRequest = { method?: string; body?: unknown };
 type VercelResponse = { status: (code: number) => VercelResponse; json: (body: unknown) => void };
 
+/** Handles Dawn chat requests, prioritizing crisis support before AI responses. */
 export default async function handler(request: VercelRequest, response: VercelResponse) {
   if (request.method !== 'POST') {
     return response.status(405).json({ error: 'Method not allowed.' });
